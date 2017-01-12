@@ -1,24 +1,75 @@
 const Mongoose = require('mongoose');
 module.exports = {
 
-    find: function(request, reply) {
+        find: function(request, reply) {
 
-        reply(request.params.user)
-        
-    },
+            const User = Mongoose.model('user')
 
-    create: function(request, reply) {
+            User.find({
 
-        const User = Mongoose.model('user')
+                pseudo: request.params.pseudo
+            }).exec(function(err, user) {
+                if (err) {
+                    return reply(err);
+                }
+                if (!request.params.pseudo) {
+                    return reply('Utilisateur introuvable');
+                }
+                console.log(user.id)
+                return reply(user)
 
-        const user = new User({
-            pseudo: request.payload.pseudo,
-            password: request.payload.password
-        })
+            });
+        },
 
-        user.save(function() {
+        create: function(request, reply) {
 
-            reply('Ok')
-        })
-    }
+            const User = Mongoose.model('user')
+
+            const user = new User({
+                pseudo: request.payload.pseudo,
+                password: request.payload.password
+            })
+
+            user.save(function() {
+
+                reply('Ok')
+            });
+        },
+
+        delete: function(request, reply) {
+
+            const User = Mongoose.model('user')
+
+            User.remove({
+
+                _id: request.params.id
+            }).exec(function(err) {
+                if (err) {
+                    return reply(err)
+                } else {
+                    reply('ok')
+                }
+            })
+
+
+        },
+
+        update: function(request, reply) {
+
+            const User = Mongoose.model('user')
+
+            User.update({id: request.payload.id}, {
+                pseudo: request.payload.pseudo
+
+            }, function(err) {
+              if (err) {
+                  return reply(err)
+              } else {
+                  reply('ok')
+              }
+            })
+
+
+
+        }
 }

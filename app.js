@@ -5,6 +5,7 @@ const Config = require('config');
 const Mongoose = require('mongoose');
 const mainRoute = require('./routes/main.route.js');
 const userRoute = require('./routes/user.route.js');
+const movieRoute = require('./routes/movie.route.js');
 const connectionDb = require ('./utils/connectiondb.js');
 const userModel = require ('./models/user.model.js');
 
@@ -17,6 +18,7 @@ server.connection(Config.get('server.connection'));
 
 server.route(mainRoute);
 server.route(userRoute);
+server.route(movieRoute);
 
 server.start((err) => {
     console.log(server.info.uri)

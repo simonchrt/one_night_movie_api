@@ -11,6 +11,8 @@
   "dependencies": {
     "config": "^1.24.0",
     "hapi": "^16.1.0",
-    "mongoose": "^4.7.6"
+    "joi": "^10.1.0",
+    "mongoose": "^4.7.6",
+    "request": "^2.79.0"
   }
 }
