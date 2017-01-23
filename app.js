@@ -11,6 +11,7 @@ const userModel = require ('./models/user.model.js');
 
 connectionDb();
 const userSchema = new Mongoose.Schema(userModel.schema);
+userSchema.pre('save',userModel.preSave);
 Mongoose.model('user',userSchema);
 
 const server = new Hapi.Server();

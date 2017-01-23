@@ -1,6 +1,8 @@
 {
     "server": {
-
+        "auth": {
+            "saltFactor": 10
+        },
         "connection": {
             "host": "localhost",
             "port": 3000,
@@ -16,7 +18,5 @@
             "pass": "Simon1522"
         }
     },
-
     "api_key_tmd": "f2b48700559e7dcdf6e8edead951ec6a"
-
 }

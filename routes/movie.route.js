@@ -6,7 +6,7 @@ module.exports = [{
         path: '/movie/{idtmd}',
         config: {
             validate: {
-                options:{
+                options: {
                     allowUnknown: false
                 },
                 params: {
@@ -17,6 +17,23 @@ module.exports = [{
         handler: movieController.searchMovie
     },
 
+    {
+        method: 'GET',
+        path: '/movie/genrestmd/all',
+        handler: movieController.listGenre
+      },
+
+      {
+        method: 'GET',
+        path: '/movie/randommovie',
+        handler: movieController.randomMovie
+      },
+
+      {
+        method: 'GET',
+        path:'/movie/tenrandommovie',
+        handler: movieController.tenRandomMovie
+      }
 
 
 ]
