@@ -21,19 +21,23 @@ module.exports = [{
         method: 'GET',
         path: '/movie/genrestmd/all',
         handler: movieController.listGenre
-      },
+    },
 
-      {
+    {
         method: 'GET',
         path: '/movie/randommovie',
         handler: movieController.randomMovie
-      },
+    },
 
-      {
+    {
         method: 'GET',
-        path:'/movie/tenrandommovie',
+        path: '/movie/tenrandommovie',
         handler: movieController.tenRandomMovie
-      }
+    },
 
-
+    {
+        method: 'GET',
+        path: '/movie/genres/{idgenres}',
+        handler: movieController.searchMovieByGenres
+    }
 ]

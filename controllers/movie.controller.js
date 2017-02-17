@@ -1,7 +1,6 @@
 const Mongoose = require('mongoose');
 const Request = require('request');
 const Config = require('config');
-const movieService = require('./../services/movie.service');
 const async = require('async');
 const _ = require('lodash');
 
@@ -11,21 +10,35 @@ module.exports = {
         const key = Config.get("api_key_tmd")
         Request('https://api.themoviedb.org/3/movie/' + request.params.idtmd + '?api_key=' + key + '&language=fr-FR&append_to_response=credits', function(error, response, body) {
             if (!error && response.statusCode == 200) {
-                reply(body).type('application/json')
                 var result = JSON.parse(body);
-                var test = movieService.formatMovie(result.id, result.original_title, result.release_date, result.genres);
-                console.log(test) // Show the HTML for the Google homepage.
+                console.log(result)
+                reply(result).type('application/json')
             }
         })
 
     },
 
+    searchMovieByGenres: function(request, reply) {
+        const key = Config.get("api_key_tmd")
+        Request('https://api.themoviedb.org/3/genre/' + request.params.idgenres + '/movies?api_key=' + key + '&language=en-US&include_adult=false&sort_by=created_at.asc', function(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                var result = JSON.parse(body);
+                var format = movieService.formatMovie(result.id, result.original_title, result.release_date, result.genres);
+                console.log(format) // Show the HTML for the Google homepage.
+                reply(format).type('application/json')
+            }
+        })
+
+    },
+
+
     listGenre: function(request, reply) {
         const key = Config.get("api_key_tmd")
         Request('https://api.themoviedb.org/3/genre/movie/list?api_key=' + key + '&language=en-US', function(error, response, body) {
             if (!error && response.statusCode == 200) {
-                reply(body).type('application/json')
-                console.log(typeof body) // Show the HTML for the Google homepage.
+                var result = JSON.parse(body);
+                reply(result["genres"]).type('application/json')
+                console.log(result["genres"]) // Show the HTML for the Google homepage.
             }
         })
     },
@@ -41,30 +54,10 @@ module.exports = {
         })
     },
 
+
     tenRandomMovie: function(request, reply) {
         const key = Config.get("api_key_tmd");
         const movies = [];
-        /*const test = [];
-                var i = 0;
-                test.push({
-                    id: 3,
-                    title: "Denis la malice"
-                });
-
-                if (_.filter(movies, function(o) {
-                        return o.id = 3;
-                    }).length == 0) {
-                    console.log("ok")
-                } else {
-                    console.log("fail")
-                    console.log(_.filter(movies, function(o) {
-                        return o.id = 3;
-                    }))
-
-                }
-            }
-            */
-
 
         async.whilst(
             function() {
@@ -72,15 +65,9 @@ module.exports = {
             },
             function(callback) {
 
-              while (test = true) {
-                var random = Math.floor((Math.random() * (550 - 541 + 1)) + 541);
+                var random = Math.floor((Math.random() * (1000 - 100 + 1)) + 100);
 
-                if (true) {
-
-                }
-              }
-
-                Request('https://api.themoviedb.org/3/movie/' + random + '?api_key=' + key, function(error, response, body) {
+                Request('https://api.themoviedb.org/3/movie/' + random + '?api_key=' + key + '&append_to_response=credits', function(error, response, body) {
 
                     if (error) {
                         return callback('error in the request:' + error);
@@ -93,44 +80,33 @@ module.exports = {
 
                     })
                     if (!error && response.statusCode == 200 && existMovie.length === 0) {
-                        console.log("success");
-                        movies.push(result);
+                        var realisateurs = _.filter(result.credits.crew, {
+                            'job': 'Director'
+                        });
+                        var acteurs = result.credits.cast
+                        format = _.pick(result, ['id', 'original_title', 'overview', 'poster_path', 'backdrop_path', 'genres', 'runtime', 'release_date']);
+                        _.merge(format, {
+                            realisateurs: realisateurs
+                        })
+                        _.merge(format, {
+                            acteurs: acteurs
+                        })
                         callback(null);
+
+                        movies.push(format);
+
                     } else {
-                        console.log("Error : movie already exist ");
+                        console.log("Error : movie already exist");
                         callback(null);
 
                     }
                 })
             },
-            function(err, n) {
+            function(err, test) {
                 console.log(err)
-                reply(movies)
+                return reply(movies)
             }
         );
     }
-    /*
-        getMultipleMovie: function(request, reply) {
-            console.log("start function")
-            const key = Config.get("api_key_tmd");
-            async.times(10, function(n, next) {
-                var random = Math.floor((Math.random() * (550 - 500 + 1)) + 500);
-                console.log("before request")
-                Request('https://api.themoviedb.org/3/movie/' + random + '?api_key=' + key, function(error, response, body) {
-                    console.log("after request")
-                    if (!error && response.statusCode == 200) {
-                        console.log("result found")
-                        var result = JSON.parse(body);
-                        next(null, result);
-                    } else {
-                        next(null)
-                        console.log("error", error)
-                    }
-                })
-            }, function(err, movies) {
-                console.log("end")
-                reply(movies)
-            });
-        }
-        */
+
 }
